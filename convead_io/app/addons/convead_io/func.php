@@ -37,7 +37,13 @@ function fn_convead_io_change_order_status($status_to, $status_from, $order_info
     }
 }
 
-// Создаём функцию, которая подключится к хуку.
+function fn_convead_io_clear_cart($cart) {
+    $convead_tracker = get_convead_tracker();
+    if(!empty($_GET['dispatch']) and $_GET['dispatch'] == 'checkout.clear' and $convead_tracker) {
+        $convead_tracker->eventUpdateCart(array());
+    }
+}
+
 function fn_convead_io_pre_add_to_cart(&$product_data, &$cart, &$auth, &$update) {
     $convead_tracker = get_convead_tracker();
     if($convead_tracker) {
@@ -56,6 +62,8 @@ function fn_convead_io_add_to_cart($cart, $product_id, $_id) {
     if($convead_tracker) {
         $order_array = array();
         foreach ($cart['products'] AS $product) {
+            // запретить отрицательное количество товаров
+            if ($product['amount'] <= 0) continue;
             $order_array[] = array(
                 'product_id' => $product['product_id'],
                 'qnt' => $product['amount'],
@@ -71,6 +79,8 @@ function fn_convead_io_post_add_to_cart(&$product_data, &$cart, &$auth, &$update
     if($convead_tracker) {
         $order_array = array();
         foreach ($product_data AS $product) {
+            // запретить отрицательное количество товаров
+            if ($product['amount'] <= 0) continue;
             $_product_data = fn_get_product_data($product['product_id'], $auth);
             $order_array[] = array(
                 'product_id' => $product['product_id'],
