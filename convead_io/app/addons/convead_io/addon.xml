@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<addon scheme="2.0" edition_type="ROOT">
+    <priority>10000</priority>
+    <status>active</status>
+    <id>convead_io</id>
+    <version>1.0.0</version>
+    <default_language>ru</default_language>
+    <name>Convead</name>
+    <description><![CDATA[ Интеграция Convead CMS <b><a href='https://app.convead.io' target='_blank'>Перейти в аккаунт Convead</a></b> ]]></description>
+    <priority>9999999999</priority>
+    <status>active</status>
+    <auto_install>MULTIVENDOR,ULTIMATE</auto_install>
+    <authors>
+        <author>
+            <name>WebShopAddons</name>
+            <email>shurov9009@gmail.com</email>
+            <url>http://shurov.pp.ua</url>
+            <phone>+79108403682</phone>
+        </author>
+    </authors>
+    <!-- Переводы на языки отличные от языка по умолчанию -->
+    <translations>
+        <item for="name" lang="en">Integration convead.io</item>
+        <item for="description" lang="en"><![CDATA[ Integration Convead CMS <b><a href='https://app.convead.io' target='_blank'>Перейти в аккаунт Convead</a></b> ]]></item>
+    </translations>
+
+    <settings edition_type="ROOT">
+        <sections>
+            <section id="general">
+                <name>Общие настройки</name>
+                <translations>
+                    <item lang="en">Generic settings</item>
+                </translations>
+                <items>
+                    <item id="convead_io_api_key">
+                        <type>input</type>
+                        <name>API­ключ:</name>
+                        <!-- Всплывающая подсказка -->
+                        <tooltip>API­ключ</tooltip>
+                        <translations>
+                            <item lang="en">API­key:</item>
+                            <!-- Для подсказок тоже возможно задание переводов -->
+                            <item lang="en" for="tooltip">”API­key</item>
+                        </translations>
+                        <variants/>
+                    </item>
+                </items>
+            </section>
+        </sections>
+    </settings>
+</addon>
