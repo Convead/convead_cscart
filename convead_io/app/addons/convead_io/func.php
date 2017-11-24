@@ -6,34 +6,26 @@ use Tygh\Registry;
 
 function fn_convead_io_change_order_status($status_to, $status_from, $order_info, $force_notification, $order_statuses, $place_order)
 {
-	switch ($status_to) {
-		case 'W':
-			$key = 'order_is_given'; // Заказ вручен покупателю
-			break;
-		case 'P':
-			$key = 'order_ready_to_delavery'; //Заказ готов к доставке
-			break;
-		case 'C':
-			$key = 'order_complete'; // Заказ Выполнен
-			break;
-		case 'X':
-			$key = 'order_delavery_complete'; // Заказ в пункте самовывоза
-			break;
-		default:
-			$key = false;
-	}
-	if ($key) {
-  	$api_key = Settings::instance()->getValue('convead_io_api_key', 'convead_io');
-  	if($api_key){
-    		$domain = Registry::get('config.current_host');
-     		$referrer = $_SERVER['HTTP_REFERER'];
-     		$guest_uid = false;
-     		$visitor_uid = $order_info['user_id'];
-     		$visitor_info = false;
+  switch ($status_to) {
+    case 'o':
+      $state = 'new'; // Открыт
+      break;
+    case 'd':
+      $state = 'cancelled'; // Отклонен
+      break;
+    case 'i':
+      $state = 'cancelled'; // Анулирован
+      break;
+    default:
+      $state = $status_to;
+  }
+  if ($state) {
+    $api_key = Settings::instance()->getValue('convead_io_api_key', 'convead_io');
+    if($api_key){
         include_once('ConveadTracker.php');
-     		$convead_tracker = new ConveadTracker($api_key, $domain, $guest_uid, $visitor_uid, $visitor_info, $referrer, $domain);
-  	   	$convead_tracker->eventCustom($key, array('order_id'=>$order_info['order_id']));
-	   	}
+        $convead_tracker = new ConveadTracker($api_key, Registry::get('config.current_host'));
+        $convead_tracker->webHookOrderUpdate($order_info['order_id'], $state);
+      }
   }
 }
 
@@ -140,8 +132,6 @@ function fn_convead_io_place_order($order_id, $action, $order_status, $cart, $au
     }
   }
 }
-
-
 
 function get_convead_tracker(){
   $api_key = Settings::instance()->getValue('convead_io_api_key', 'convead_io');

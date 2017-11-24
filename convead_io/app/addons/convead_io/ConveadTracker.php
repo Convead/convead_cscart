@@ -6,7 +6,7 @@
 class ConveadTracker {
   public $version = '1.2.2';
 
-  public $debug = true;
+  public $debug = false;
   public $charset = 'utf-8';
   public $timeout = 1;
   public $connect_timeout = 1;
