@@ -8,5 +8,6 @@ fn_register_hooks(
     'delete_cart_product',
     'add_to_cart',
     'place_order',
-    'clear_cart'
+    'clear_cart',
+    'change_order_status'
 );
