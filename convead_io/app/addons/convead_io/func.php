@@ -6,7 +6,7 @@ use Tygh\Registry;
 
 function fn_convead_io_change_order_status($status_to, $status_from, $order_info, $force_notification, $order_statuses, $place_order)
 {
-  switch ($status_to) {
+  switch (strtolower($status_to)) {
     case 'o':
       $state = 'new'; // Открыт
       break;
