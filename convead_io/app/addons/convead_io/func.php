@@ -6,19 +6,7 @@ use Tygh\Registry;
 
 function fn_convead_io_change_order_status($status_to, $status_from, $order_info, $force_notification, $order_statuses, $place_order)
 {
-  switch (strtolower($status_to)) {
-    case 'o':
-      $state = 'new'; // Открыт
-      break;
-    case 'd':
-      $state = 'cancelled'; // Отклонен
-      break;
-    case 'i':
-      $state = 'cancelled'; // Анулирован
-      break;
-    default:
-      $state = $status_to;
-  }
+  $state = switch_order_state($status_to);
   if ($state) {
     $api_key = Settings::instance()->getValue('convead_io_api_key', 'convead_io');
     if($api_key){
@@ -109,7 +97,13 @@ function fn_convead_io_delete_cart_product(&$cart, &$cart_id, &$full_erase){
 function fn_convead_io_place_order($order_id, $action, $order_status, $cart, $auth){
   $_order = fn_get_order_info($order_id);
   if($_order and !$action){
-    $convead_tracker = get_convead_tracker();
+    $visitor_info = array(
+      'first_name'=> $_order['firstname'],
+      'last_name' => $_order['lastname'],
+      'email'=> $_order['email'],
+      'phone'=> $_order['b_phone']
+    );
+    $convead_tracker = get_convead_tracker($visitor_info);
     if($convead_tracker){
       $revenue = $_order['total'];
       $order_array = false;
@@ -120,20 +114,13 @@ function fn_convead_io_place_order($order_id, $action, $order_status, $cart, $au
           'price' => $_product['price']
         );
       }
-
-      $order_shipping = array(
-        'first_name'=> $_order['firstname'],
-        'last_name' => $_order['lastname'],
-        'email'=> $_order['email'],
-        'phone'=> $_order['b_phone']
-      );
-
-      $convead_tracker->eventOrder($order_id, $revenue, $order_array, $order_shipping);
+      $state = switch_order_state($_order['status']);
+      $convead_tracker->eventOrder($order_id, $revenue, $order_array, $state);
     }
   }
 }
 
-function get_convead_tracker(){
+function get_convead_tracker($visitor_info = array()){
   $api_key = Settings::instance()->getValue('convead_io_api_key', 'convead_io');
   if($api_key){
     $guest_uid = !empty($_COOKIE['convead_guest_uid']) ? $_COOKIE['convead_guest_uid'] : false;
@@ -142,7 +129,6 @@ function get_convead_tracker(){
     if(isset($_SESSION['auth']['user_id'])){
       $visitor_uid = $_SESSION['auth']['user_id'];
       $_visitor_info = fn_get_user_info($visitor_uid, false);
-      $visitor_info = array();
       if(!empty($_visitor_info['firstname'])) $visitor_info['first_name'] = $_visitor_info['firstname'];
       if(!empty($_visitor_info['lastname'])) $visitor_info['lastname'] = $_visitor_info['lastname'];
       if(!empty($_visitor_info['email'])) $visitor_info['email'] = $_visitor_info['email'];
@@ -150,7 +136,6 @@ function get_convead_tracker(){
       if(!empty($_visitor_info['birthday'])) $visitor_info['birthday'] = $_visitor_info['birthday'];
     }else{
       $visitor_uid = false;
-      $visitor_info = false;
     }
     include_once('ConveadTracker.php');
     $convead_tracker = new ConveadTracker($api_key, $domain, $guest_uid, $visitor_uid, $visitor_info, $referrer, $domain);
@@ -158,4 +143,24 @@ function get_convead_tracker(){
     $convead_tracker = false;
   }
   return $convead_tracker;
+}
+
+function switch_order_state($new_state = ''){
+  switch ($new_state) {
+    case 'O':
+      $state = 'new'; // Открыт
+      break;
+    case 'N':
+      $state = 'new'; // Открыт
+      break;
+    case 'D':
+      $state = 'cancelled'; // Отклонен
+      break;
+    case 'I':
+      $state = 'cancelled'; // Анулирован
+      break;
+    default:
+      $state = $new_state;
+  }
+  return $state;
 }

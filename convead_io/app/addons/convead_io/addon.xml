@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <addon scheme="2.0" edition_type="ROOT">
     <id>convead_io</id>
-    <version>1.1.0</version>
+    <version>1.2.0</version>
     <default_language>ru</default_language>
     <name>Convead</name>
     <description><![CDATA[ Интеграция Convead CMS <b><a href='https://app.convead.io' target='_blank'>Перейти в аккаунт Convead</a></b> ]]></description>
