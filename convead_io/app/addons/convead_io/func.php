@@ -20,6 +20,7 @@ function fn_convead_io_change_order_status($status_to, $status_from, $order_info
 function fn_convead_io_clear_cart($cart) {
   $convead_tracker = get_convead_tracker();
   if(!empty($_GET['dispatch']) and $_GET['dispatch'] == 'checkout.clear' and $convead_tracker) {
+    if ($convead_tracker->generated_uid) return true;
     $convead_tracker->eventUpdateCart(array());
   }
 }
@@ -27,6 +28,7 @@ function fn_convead_io_clear_cart($cart) {
 function fn_convead_io_pre_add_to_cart(&$product_data, &$cart, &$auth, &$update) {
   $convead_tracker = get_convead_tracker();
   if($convead_tracker) {
+    if ($convead_tracker->generated_uid) return true;
     foreach ($product_data AS $product) {
       $url = fn_url('products.view?product_id=' . $product['product_id']);
       $_product_data = fn_get_product_data($product['product_id'], $auth);
@@ -40,6 +42,7 @@ function fn_convead_io_pre_add_to_cart(&$product_data, &$cart, &$auth, &$update)
 function fn_convead_io_add_to_cart($cart, $product_id, $_id) {
   $convead_tracker = get_convead_tracker();
   if($convead_tracker) {
+    if ($convead_tracker->generated_uid) return true;
     $order_array = array();
     foreach ($cart['products'] AS $product) {
       // запретить отрицательное количество товаров
@@ -57,6 +60,7 @@ function fn_convead_io_add_to_cart($cart, $product_id, $_id) {
 function fn_convead_io_post_add_to_cart(&$product_data, &$cart, &$auth, &$update){
   $convead_tracker = get_convead_tracker();
   if($convead_tracker) {
+    if ($convead_tracker->generated_uid) return true;
     $order_array = array();
     foreach ($product_data AS $product) {
       // запретить отрицательное количество товаров
@@ -75,6 +79,7 @@ function fn_convead_io_post_add_to_cart(&$product_data, &$cart, &$auth, &$update
 function fn_convead_io_delete_cart_product(&$cart, &$cart_id, &$full_erase){
   $convead_tracker = get_convead_tracker();
   if($convead_tracker) {
+    if ($convead_tracker->generated_uid) return true;
     $product_id = $cart['products'][$cart_id]['product_id'];
     $_product_data = fn_get_product_data($product_id, $_SESSION['auth']);
     $qnt = $cart['products'][$cart_id]['amount'];
