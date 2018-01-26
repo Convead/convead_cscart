@@ -4,6 +4,81 @@ use Tygh\Settings;
 use Tygh\Registry;
 
 
+function fn_convead_io_companies($lang_code = CART_LANGUAGE)
+{
+  $addon_name = 'convead_io';
+  $setting_name = 'convead_io_companies';
+  $setting_companies = false;
+  
+    $section = Settings::instance()->getSectionByName($addon_name, Settings::ADDON_SECTION);
+    $section_id = !empty($section['section_id']) ? $section['section_id'] : 0;
+    $settings = Settings::instance()->getList($section_id, 0, true);
+    foreach($settings as $setting)
+    {
+      if ($setting['name'] == $setting_name) 
+      {
+        $setting_companies = $setting;
+        break;
+      }
+    }
+  
+    $companis = db_get_array("SELECT company_id, storefront FROM ?:companies");
+    
+  $html = '';
+  foreach($companis as $company)
+  {
+    $html .= '
+    <h4 class="subheader hand">'.$company['storefront'].'</h4>
+    <div class="control-group setting-wide convead_io">
+      <label class="control-label ">APP-key</label>
+      <div class="controls">
+      <input type="text" name="'.$company['company_id'].'" size="30" value="" class="company_option user-success" onchange="setCompanyValue('.$company['company_id'].', this);">
+      </div>
+    </div>
+    ';
+  }
+  
+  $html .= '
+<input type="hidden" name="addon_data[options]['.$setting_companies['object_id'].']" value=\''.$setting_companies['value'].'\' id="company_options" />
+<script>
+var setCompanyValue = function(option, el) {
+  var hidden = document.getElementById("company_options");
+  var data = {};
+  var el = document.querySelectorAll(".company_option");
+  for(var k in el)
+  {
+    data[ el[k].name ] = el[k].value;
+  }
+  hidden.value = JSON.stringify(data);
+}
+var applyCompanyValues = function() {
+  var hidden = document.getElementById("company_options");
+  var options = (hidden.value ? JSON.parse(hidden.value) : {});
+  for(var k in options)
+  {
+    var el = document.querySelector(".company_option");
+    for (var lel in el)
+    {
+      if (el.name == k) el.value = options[k];
+    }
+  }
+}
+applyCompanyValues();
+</script>
+  ';
+
+    return $html;
+}
+
+function getCompanyId()
+{
+  if (Registry::get('runtime.simple_ultimate')) {
+    return Registry::get('runtime.forced_company_id');
+  } else {
+    return Registry::get('runtime.company_id');
+  }
+}
+
 function fn_convead_io_change_order_status($status_to, $status_from, $order_info, $force_notification, $order_statuses, $place_order)
 {
   $state = switch_order_state($status_to);
@@ -125,8 +200,24 @@ function fn_convead_io_place_order($order_id, $action, $order_status, $cart, $au
   }
 }
 
+function get_app_key()
+{
+  $app_key = Settings::instance()->getValue('convead_io_api_key', 'convead_io');
+  
+  $json_companies = Settings::instance()->getValue('convead_io_companies', 'convead_io');
+  if ($json_companies)
+  {
+    $companies_app_keys = json_decode($json_companies);
+    $id = getCompanyId();
+    if ($companies_app_keys and isset($companies_app_keys->$id)) $app_key = $companies_app_keys->$id;
+  }
+  
+  return $app_key;
+}
+
 function get_convead_tracker($visitor_info = array()){
-  $api_key = Settings::instance()->getValue('convead_io_api_key', 'convead_io');
+  $api_key = get_app_key();
+
   if($api_key){
     $guest_uid = !empty($_COOKIE['convead_guest_uid']) ? $_COOKIE['convead_guest_uid'] : false;
     $domain = Registry::get('config.current_host');

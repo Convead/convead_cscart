@@ -32,14 +32,15 @@
                 <items>
                     <item id="convead_io_api_key">
                         <type>input</type>
-                        <name>API­ключ:</name>
-                        <!-- Всплывающая подсказка -->
-                        <tooltip>API­ключ</tooltip>
+                        <name>Общий APP­-key:</name>
                         <translations>
-                            <item lang="en">API­key:</item>
-                            <!-- Для подсказок тоже возможно задание переводов -->
-                            <item lang="en" for="tooltip">”API­key</item>
+                            <item lang="en">Union APP­-key:</item>
                         </translations>
+                        <variants/>
+                    </item>
+                    <item id="convead_io_companies">
+                        <type>info</type>
+                        <handler>fn_convead_io_companies</handler>
                         <variants/>
                     </item>
                 </items>

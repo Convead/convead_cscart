@@ -1,6 +1,15 @@
 <script type="text/javascript">
     {if $addons.convead_io.convead_io_api_key}
     <!-- ConveadWidget -->
+    
+    var app_key = "{$addons.convead_io.convead_io_api_key}";
+    var json_companies = '{$addons.convead_io.convead_io_companies}'.split('&quot;').join('"');
+    var company_id = {$runtime.company_id};
+    if (json_companies) {
+        var companies = JSON.parse(json_companies);
+        if (companies && companies[company_id]) app_key = companies[company_id];
+    }
+    
     window.ConveadSettings = {
         {if $auth.user_id }
         visitor_uid: '{$auth.user_id}',
@@ -13,7 +22,7 @@
             {if $user_data.gender}date_of_birth:{$user_data.gender}{/if}
         },
         {/if}
-        app_key: "{$addons.convead_io.convead_io_api_key}"
+        app_key: app_key
 
     };
     (function(w,d,c){
@@ -23,7 +32,7 @@
         var s = d.createElement('script');
         s.type = 'text/javascript';
         s.async = true;
-        s.src = '//tracker.convead.io/widgets/'+ts+'/widget-{$addons.convead_io.convead_io_api_key}.js';
+        s.src = '//tracker.convead.io/widgets/'+ts+'/widget-'+app_key+'.js';
         var x = d.getElementsByTagName('script')[0];
         x.parentNode.insertBefore(s, x);
     })(window,document,'convead');
