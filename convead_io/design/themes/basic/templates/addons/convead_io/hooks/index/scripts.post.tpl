@@ -1,5 +1,4 @@
 <script type="text/javascript">
-    {if $addons.convead_io.convead_io_api_key}
     <!-- ConveadWidget -->
     
     var app_key = "{$addons.convead_io.convead_io_api_key}";
@@ -9,6 +8,8 @@
         var companies = JSON.parse(json_companies);
         if (companies && companies[company_id]) app_key = companies[company_id];
     }
+    
+    if (app_key) {
     
     window.ConveadSettings = {
         {if $auth.user_id }
@@ -37,9 +38,6 @@
         x.parentNode.insertBefore(s, x);
     })(window,document,'convead');
     <!-- /Convead Widget -->
-    {else}
-    console.log('Convead Widget API-key not install')
-    {/if}
     jQuery(document).ready(
         function(){
             jQuery(document).on(
@@ -59,4 +57,6 @@
             );
         }
     );
+    
+    }
 </script>
