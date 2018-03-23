@@ -59,7 +59,7 @@ var applyCompanyValues = function() {
     var el = document.querySelectorAll(".company_option");
     for (var lel in el)
     {
-      if (el.name == k) el.value = options[k];
+      if (el[lel].name == k) el[lel].value = options[k];
     }
   }
 }
