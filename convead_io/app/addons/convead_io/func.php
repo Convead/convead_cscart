@@ -56,7 +56,7 @@ var applyCompanyValues = function() {
   var options = (hidden.value ? JSON.parse(hidden.value) : {});
   for(var k in options)
   {
-    var el = document.querySelector(".company_option");
+    var el = document.querySelectorAll(".company_option");
     for (var lel in el)
     {
       if (el.name == k) el.value = options[k];
