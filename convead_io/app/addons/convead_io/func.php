@@ -221,7 +221,7 @@ function get_convead_tracker($visitor_info = array()){
   if($api_key){
     $guest_uid = !empty($_COOKIE['convead_guest_uid']) ? $_COOKIE['convead_guest_uid'] : false;
     $domain = Registry::get('config.current_host');
-    $referrer = $_SERVER['HTTP_REFERER'];
+    $referrer = !empty($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null;
     if(isset($_SESSION['auth']['user_id'])){
       $visitor_uid = $_SESSION['auth']['user_id'];
       $_visitor_info = fn_get_user_info($visitor_uid, false);
