@@ -83,10 +83,10 @@ function fn_convead_io_change_order_status($status_to, $status_from, $order_info
 {
   $state = switch_order_state($status_to);
   if ($state) {
-    $api_key = Settings::instance()->getValue('convead_io_api_key', 'convead_io');
+    $api_key = get_app_key($order_info['company_id']);
     if($api_key){
         include_once('ConveadTracker.php');
-        $convead_tracker = new ConveadTracker($api_key, Registry::get('config.current_host'));
+        $convead_tracker = new ConveadTracker($api_key);
         $convead_tracker->webHookOrderUpdate($order_info['order_id'], $state);
       }
   }
@@ -200,7 +200,7 @@ function fn_convead_io_place_order($order_id, $action, $order_status, $cart, $au
   }
 }
 
-function get_app_key()
+function get_app_key($id = null)
 {
   $app_key = Settings::instance()->getValue('convead_io_api_key', 'convead_io');
   
@@ -208,7 +208,7 @@ function get_app_key()
   if ($json_companies)
   {
     $companies_app_keys = json_decode($json_companies);
-    $id = getCompanyId();
+    $id = $id || getCompanyId();
     if ($companies_app_keys and isset($companies_app_keys->$id)) $app_key = $companies_app_keys->$id;
   }
   
