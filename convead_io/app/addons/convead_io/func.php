@@ -208,7 +208,7 @@ function get_app_key($id = null)
   if ($json_companies)
   {
     $companies_app_keys = json_decode($json_companies);
-    $id = $id || getCompanyId();
+    $id = !empty($id) ? $id : getCompanyId();
     if ($companies_app_keys and isset($companies_app_keys->$id)) $app_key = $companies_app_keys->$id;
   }
   
