@@ -115,12 +115,14 @@ function fn_convead_io_pre_add_to_cart(&$product_data, &$cart, &$auth, &$update)
 }
 
 function fn_convead_io_add_to_cart($cart, $product_id, $_id) {
+  // Запретить если хук был вызван функционалом "Карта и Геолокация"
+  if (isset($cart['geo_maps_shipping_estimation'])) return;
+
   $convead_tracker = get_convead_tracker();
   if($convead_tracker) {
     if ($convead_tracker->generated_uid) return true;
     $order_array = array();
     foreach ($cart['products'] AS $product) {
-      // запретить отрицательное количество товаров
       if ($product['amount'] <= 0) continue;
       $order_array[] = array(
         'product_id' => $product['product_id'],
@@ -138,7 +140,6 @@ function fn_convead_io_post_add_to_cart(&$product_data, &$cart, &$auth, &$update
     if ($convead_tracker->generated_uid) return true;
     $order_array = array();
     foreach ($product_data AS $product) {
-      // запретить отрицательное количество товаров
       if ($product['amount'] <= 0) continue;
       $_product_data = fn_get_product_data($product['product_id'], $auth);
       $order_array[] = array(
